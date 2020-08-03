@@ -41,7 +41,7 @@ func SetLogLevel(logLevelString string) {
 	case "debug":
 		Logger.SetLevel(logrus.DebugLevel)
 	case "info":
-		Logger.SetLevel(logrus.DebugLevel)
+		Logger.SetLevel(logrus.InfoLevel)
 	case "warning":
 		Logger.SetLevel(logrus.WarnLevel)
 	case "error":
