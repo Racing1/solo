@@ -59,7 +59,9 @@ func main() {
 	}
 
 	// Set log level
-	log.SetLogLevel(config.LogLevel)
+	if config.LogLevel != "info" {
+		log.SetLogLevel(config.LogLevel)
+	}
 
 	// Check the config
 	err = utils.IsInvalidAddress(config.WorkmanagerNotificationsBindAddr)
