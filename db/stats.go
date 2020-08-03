@@ -102,7 +102,7 @@ func (db *Database) PruneStats(deleteDataOlderThanSecs int64) {
 			continue
 		}
 		keySplitted := strings.Split(string(key), "_")
-		timestamp, err := strconv.ParseInt(keySplitted[len(keySplitted)-1], 10, 64)
+		timestamp, err := strconv.ParseInt(keySplitted[1], 10, 64)
 		if err != nil {
 			panic(errors.Wrap(err, "Database is corrupted"))
 		}
