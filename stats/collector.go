@@ -147,7 +147,10 @@ func (c *Collector) Run() {
 			}).Info("Collected data")
 			totalCollectedHashrate = 0
 
-			c.Database.GetAndWriteCachedValues()
+			err := c.Database.GetAndWriteCachedValues()
+			if err != nil {
+				log.Logger.WithField("error", err).Error("Unable to evaluate cached values")
+			}
 			c.Database.PruneStats(keepStatsForSecs)
 		}
 	}
