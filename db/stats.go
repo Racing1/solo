@@ -224,10 +224,7 @@ func (db *Database) GetTotalHistory() ([]TotalStat, error) {
 	var history = make([]TotalStat, 144)
 	ts := utils.GetCurrent10MinTimestamp()
 	for i := int64(0); i < 144; i++ {
-		stat, err := db.GetTotalStatsByTimestamp(ts - i*600)
-		if err != nil {
-			return history, err
-		}
+		stat, _ := db.GetTotalStatsByTimestamp(ts - i*600)
 
 		history[144-1-i] = stat
 	}
