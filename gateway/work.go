@@ -18,6 +18,7 @@ package gateway
 
 import (
 	"errors"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -163,6 +164,7 @@ func (g *Gateway) validateShare(submittedWork []string, workerName string) (type
 	shareIsValid, actualTarget := hasher.Verify(share)
 
 	if shareIsValid {
+		fmt.Println("debug", fullWork[2], utils.HexStrToBigInt(fullWork[2]))
 		if utils.HexStrToBigInt(fullWork[2]).Cmp(actualTarget) > 0 {
 			go g.submitBlock(submittedWork, blockNumber, workerName, actualTarget)
 			g.parentWorkManager.BestShareTarget = utils.BigMax256bit
