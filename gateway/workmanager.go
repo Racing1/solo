@@ -92,7 +92,8 @@ type WorkManager struct {
 
 // GetLastWork returns last work
 func (w *WorkManager) GetLastWork(applyShareDiff bool) []string {
-	work := w.lastWork
+	work := make([]string, 4)
+	copy(work, w.lastWork)
 	// Apply Share Diff
 	if applyShareDiff {
 		work[2] = w.shareTargetHex
