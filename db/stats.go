@@ -86,7 +86,7 @@ func WriteStatToBatch(batch *leveldb.Batch, stat Stat, timestamp int64) {
 // WriteTotalStatToBatch writes worker stat object to the LevelDB batch
 func WriteTotalStatToBatch(batch *leveldb.Batch, stat TotalStat, timestamp int64) {
 	data, _ := msgpack.Marshal(stat)
-	key := TotalStatPrefix + "_" + strconv.FormatInt(timestamp, 10)
+	key := TotalStatPrefix + strconv.FormatInt(timestamp, 10)
 	batch.Put([]byte(key), data)
 }
 
@@ -95,9 +95,12 @@ func (db *Database) PruneStats(deleteDataOlderThanSecs int64) {
 	iter := db.DB.NewIterator(util.BytesPrefix([]byte(StatPrefix)), nil)
 
 	deleteWithTimestampLowerThan := time.Now().Unix() - deleteDataOlderThanSecs
-
+	l := len(StatPrefix)
 	for iter.Next() {
 		key := iter.Key()
+		if len(key) < l || string(key[:l]) != StatPrefix {
+			continue
+		}
 		keySplitted := strings.Split(string(key), "_")
 		timestamp, err := strconv.ParseInt(keySplitted[len(keySplitted)-1], 10, 64)
 		if err != nil {
