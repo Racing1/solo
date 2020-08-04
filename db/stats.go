@@ -237,7 +237,7 @@ func (db *Database) GetUnsortedBestShares() []BestShare {
 	var bestShares []BestShare
 	iter := db.DB.NewIterator(util.BytesPrefix([]byte(BestSharePrefix)), nil)
 	for iter.Next() {
-		timestampString := strings.Split(strings.Split(strings.Replace(string(iter.Key()), BestSharePrefix, "", 1), "__")[0], "_")[1]
+		timestampString := strings.Split(string(iter.Key()), "_")[3]
 		timestamp, err := strconv.ParseInt(timestampString, 10, 64)
 		if err != nil {
 			panic(errors.Wrap(err, "Database is corrupted"))
