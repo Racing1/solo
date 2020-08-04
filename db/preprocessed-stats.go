@@ -17,6 +17,7 @@
 package db
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/pkg/errors"
@@ -36,6 +37,7 @@ func (db *Database) GetAndWriteCachedValues() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("history", history)
 
 	var effectiveNoZeroes []float64
 	var totalValidShares uint64
@@ -84,6 +86,7 @@ func (db *Database) GetTotalAverageHashrate() *big.Int {
 func (db *Database) GetTotalShares() (TotalShares, error) {
 	data, err := db.DB.Get([]byte(TotalSharesKey), nil)
 	if err != nil {
+		fmt.Println("failed to get TotalSharesKey")
 		return TotalShares{}, err
 	}
 	var totalShares TotalShares
