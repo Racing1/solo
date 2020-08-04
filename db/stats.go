@@ -154,7 +154,7 @@ func (db *Database) GetValidSharesThenReset() (uint64, error) {
 
 // GetTotalStatsByTimestamp returns TotalStat by specified timestamp
 func (db *Database) GetTotalStatsByTimestamp(timestamp int64) (TotalStat, error) {
-	key := TotalStatPrefix + "_" + strconv.FormatInt(timestamp, 10)
+	key := TotalStatPrefix + strconv.FormatInt(timestamp, 10)
 	data, err := db.DB.Get([]byte(key), nil)
 	if err != nil {
 		return TotalStat{}, err
