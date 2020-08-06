@@ -1,7 +1,9 @@
 # Mac
 .DS_Store
 
-# Temporary files
+# SOLO Files
+solo
+solo_db
 tmp*
 
 # Web App
