@@ -252,7 +252,9 @@ func (w *WorkManager) Stop() {
 
 // SubscribeNotifications subscribes the given channel to the work receiver
 func (w *WorkManager) SubscribeNotifications(ch chan []string) {
+	w.subscriptionsMux.Lock()
 	w.subscriptions = append(w.subscriptions, ch)
+	w.subscriptionsMux.Unlock()
 }
 
 func isChanClosed(ch <-chan []string) bool {
