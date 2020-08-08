@@ -174,8 +174,6 @@ func NewWorkManager(bind string, shareDiff uint64, node *nodeapi.Node, engineWai
 			return
 		}
 
-		var channelIndexesToClean []int
-
 		workManager.lastWork = workNotification
 
 		workWithShareDifficulty := make([]string, 4)
@@ -183,20 +181,26 @@ func NewWorkManager(bind string, shareDiff uint64, node *nodeapi.Node, engineWai
 		workWithShareDifficulty[2] = workManager.shareTargetHex
 
 		// Sending work notification to all subscribers
+		var totalChannelsCount = len(workManager.subscriptions)
 		workManager.subscriptionsMux.Lock()
-		for i, ch := range workManager.subscriptions {
-			if !isChanClosed(ch) {
-				ch <- workWithShareDifficulty
-			} else {
-				channelIndexesToClean = append(channelIndexesToClean, i)
-			}
+		for _, ch := range workManager.subscriptions {
+			chCopy := ch
+			go func() {
+				select {
+				case <-chCopy:
+				default:
+					chCopy <- workWithShareDifficulty
+				}
+			}()
 		}
-
-		length := len(workManager.subscriptions)
-
-		for _, chIndex := range channelIndexesToClean {
-			workManager.subscriptions[chIndex] = workManager.subscriptions[length-1]
-			workManager.subscriptions = workManager.subscriptions[:length-1]
+		for i := 0; i < totalChannelsCount; i++ {
+			ch := workManager.subscriptions[i]
+			select {
+			case <-ch:
+				workManager.subscriptions = append(workManager.subscriptions[:i], workManager.subscriptions[i+1:]...)
+				totalChannelsCount--
+				i--
+			}
 		}
 		workManager.subscriptionsMux.Unlock()
 		workManager.workHistory.Append(workNotification[0], workNotification)
