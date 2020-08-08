@@ -200,6 +200,7 @@ func NewWorkManager(bind string, shareDiff uint64, node *nodeapi.Node, engineWai
 				workManager.subscriptions = append(workManager.subscriptions[:i], workManager.subscriptions[i+1:]...)
 				totalChannelsCount--
 				i--
+			default:
 			}
 		}
 		workManager.subscriptionsMux.Unlock()
