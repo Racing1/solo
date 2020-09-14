@@ -184,14 +184,12 @@ func NewWorkManager(bind string, shareDiff uint64, node *nodeapi.Node, engineWai
 		var totalChannelsCount = len(workManager.subscriptions)
 		workManager.subscriptionsMux.Lock()
 		for _, ch := range workManager.subscriptions {
-			chCopy := ch
-			go func() {
-				select {
-				case <-chCopy:
-				default:
-					chCopy <- workWithShareDifficulty
-				}
-			}()
+			select {
+			case <-ch:
+			default:
+				ch <- workWithShareDifficulty
+			}
+
 		}
 		for i := 0; i < totalChannelsCount; i++ {
 			ch := workManager.subscriptions[i]
