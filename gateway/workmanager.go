@@ -187,7 +187,11 @@ func NewWorkManager(bind string, shareDiff uint64, node *nodeapi.Node, engineWai
 			select {
 			case <-ch:
 			default:
-				ch <- workWithShareDifficulty
+				select {
+				case ch <- workWithShareDifficulty:
+				default:
+				}
+
 			}
 
 		}
@@ -258,14 +262,4 @@ func (w *WorkManager) SubscribeNotifications(ch chan []string) {
 	w.subscriptionsMux.Lock()
 	w.subscriptions = append(w.subscriptions, ch)
 	w.subscriptionsMux.Unlock()
-}
-
-func isChanClosed(ch <-chan []string) bool {
-	select {
-	case <-ch:
-		return true
-	default:
-	}
-
-	return false
 }

@@ -55,7 +55,9 @@ func (g *Gateway) RunWorkSender(conn net.Conn) {
 	}
 
 	// Closed channel would be automatically unsubscribed by work receiver garbege collector
+	g.parentWorkManager.subscriptionsMux.Lock()
 	close(ch)
+	g.parentWorkManager.subscriptionsMux.Unlock()
 }
 
 // HandleConnection handles the gateway connection
