@@ -66,14 +66,10 @@ func (n *Node) ChainID() (uint64, error) {
 
 // Balance delegates to `eth_getBalance` API method, and returns the address's balance
 func (n *Node) Balance(address string) (*big.Int, error) {
-	fmt.Println("getting balance of", address)
-	data, err := n.makeHTTPRPCRequest("eth_getBalance", []interface{}{address})
+	data, err := n.makeHTTPRPCRequest("eth_getBalance", []interface{}{address, "latest"})
 	if err != nil {
-		fmt.Println("error", err)
 		return nil, err
 	}
-
-	fmt.Println("response", data.(string), utils.Clear0x(data.(string)))
 
 	balance, _ := big.NewInt(0).SetString(utils.Clear0x(data.(string)), 16)
 
