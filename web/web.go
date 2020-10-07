@@ -73,9 +73,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 	}
 
 	mux.HandleFunc("/api/v1/currentBlock", func(w http.ResponseWriter, r *http.Request) {
-		// DEBUG ONLY !!!
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-
+		w.Header().Add("Content-Type", "application/json")
 		currentBlock, err := server.node.BlockNumber()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -87,9 +85,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 	})
 
 	mux.HandleFunc("/api/v1/stats", func(w http.ResponseWriter, r *http.Request) {
-		// DEBUG ONLY !!!
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-
+		w.Header().Add("Content-Type", "application/json")
 		currentTotalStats, err := server.database.GetTotalStatsByTimestamp(utils.GetCurrent10MinTimestamp())
 		totalShares, err := server.database.GetTotalShares()
 
