@@ -48,7 +48,7 @@ type Stat struct {
 
 // TotalStat represents an interface for a summarized stat DB object
 type TotalStat struct {
-	ValidShareCount   uint64  `json:"valid_share_count" json:"validShares"`
+	ValidShareCount   uint64  `json:"valid_share_count"`
 	StaleShareCount   uint64  `json:"stale_share_count"`
 	InvalidShareCount uint64  `json:"invalid_share_count"`
 	ReportedHashrate  float64 `json:"reported_hashrate"`

@@ -84,6 +84,45 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 		}))
 	})
 
+	mux.HandleFunc("/api/v1/history", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		type historyStruct struct {
+			Timestamp int64   `json:"timestamp"`
+			Effective float64 `json:"effectiveHashrate"`
+			Reported  float64 `json:"reportedHashrate"`
+			Valid     float64 `json:"validShares"`
+			Stale     float64 `json:"staleShares"`
+			Invalid   float64 `json:"invalidShares"`
+		}
+
+		var historyFmt []historyStruct
+
+		history, err := server.database.GetTotalHistory()
+
+		for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {
+			history[i], history[j] = history[j], history[i]
+		}
+
+		ts := utils.GetCurrent10MinTimestamp()
+		for i, stat := range history {
+			historyFmt = append(historyFmt, historyStruct{
+				Timestamp: ts - i*600,
+				Effective: stat.EffectiveHashrate,
+				Reported:  stat.ReportedHashrate,
+				Valid:     stat.ValidShareCount,
+				Stale:     stat.StaleShareCount,
+				Invalid:   stat.InvalidShareCount,
+			})
+		}
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		w.Write(MarshalAPIResponse(APIResponse{
+			Result: historyFmt,
+			Error:  err,
+		}))
+	})
+
 	mux.HandleFunc("/api/v1/stats", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		currentTotalStats, err := server.database.GetTotalStatsByTimestamp(utils.GetCurrent10MinTimestamp())
