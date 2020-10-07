@@ -17,6 +17,7 @@
 package db
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/pkg/errors"
@@ -56,6 +57,7 @@ func (db *Database) GetAndWriteCachedValues() error {
 	avgHashrate := big.NewFloat(0)
 
 	for _, item := range effectiveNoZeroes {
+		fmt.Println("effective", item, effectiveNoZeroesLen, item/effectiveNoZeroesLen)
 		avgHashrate.Set(big.NewFloat(0).Add(avgHashrate, big.NewFloat(item/effectiveNoZeroesLen))) // 144 is the length of history
 	}
 
