@@ -133,8 +133,8 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 
 		siDiv, siChar := utils.GetSI(averageEffectiveFloat)
 
-		data, _ := json.Marshal(h{
-			"result": h{
+		w.Write(MarshalAPIResponse(APIResponse{
+			Result: h{
 				"hashrate": h{
 					"effective": currentTotalStats.EffectiveHashrate,
 					"reported":  currentTotalStats.ReportedHashrate,
@@ -150,9 +150,32 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 					"char": siChar,
 				},
 			},
-			"error": processError(err),
-		})
-		w.Write(data)
+			Error: err,
+		}))
+	})
+
+	mux.HandleFunc("/api/v1/headerStats", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+		workers := server.database.GetWorkers()
+
+		workersOnline := 0
+		workersOffline := 0
+		for _, worker := range workers {
+			if worker.IsOnline {
+				workersOnline++
+			} else {
+				workersOffline++
+			}
+		}
+
+		w.Write(MarshalAPIResponse(APIResponse{
+			Result: h{
+				"workersOnline":   workersOnline,
+				"workersOffline":  workersOffline,
+				"coinbaseBalance": 0,
+				"efficiency":      0,
+			},
+		}))
 	})
 
 	server.httpServer = &http.Server{

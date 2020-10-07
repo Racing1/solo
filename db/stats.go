@@ -37,7 +37,7 @@ import (
 
 // Stat represents an interface for a stat DB object
 type Stat struct {
-	Timestamp int64 `json:"timestamp"`
+	Timestamp         int64   `json:"timestamp"`
 	WorkerName        string  `json:"worker_name"`
 	ValidShareCount   uint64  `json:"valid_share_count"`
 	StaleShareCount   uint64  `json:"stale_share_count"`
@@ -260,4 +260,58 @@ func (db *Database) GetUnsortedBestShares() []BestShare {
 	}
 	iter.Release()
 	return bestShares
+}
+
+// Worker is a struct returned by GetWorkers function
+type Worker struct {
+	Name              string
+	LastSeen          int64
+	IsOnline          bool
+	EffectiveHashrate float64
+	ReportedHashrate  float64
+	ValidShares       uint64
+	StaleShares       uint64
+	InvalidShares     uint64
+}
+
+// GetWorkers returns current workers
+func (db *Database) GetWorkers() []Worker {
+	var workerStats = make(map[string]Worker)
+	iter := db.DB.NewIterator(util.BytesPrefix([]byte(StatPrefix)), nil)
+	ts := utils.GetCurrent10MinTimestamp()
+	for iter.Next() {
+		var stat Stat
+		err := json.Unmarshal(iter.Value(), &stat)
+		if err != nil {
+			panic(errors.Wrap(err, "Database is corrupted"))
+		}
+		if _, ok := workerStats[stat.WorkerName]; !ok {
+			workerStats[stat.WorkerName] = Worker{Name: stat.WorkerName}
+		}
+
+		statCopy := workerStats[stat.WorkerName]
+		if stat.Timestamp == ts {
+			statCopy.IsOnline = true
+		}
+
+		if stat.Timestamp > statCopy.LastSeen {
+			statCopy.LastSeen = stat.Timestamp
+			statCopy.EffectiveHashrate = stat.EffectiveHashrate
+			statCopy.ReportedHashrate = stat.ReportedHashrate
+		}
+
+		statCopy.ValidShares += stat.ValidShareCount
+		statCopy.StaleShares += stat.StaleShareCount
+		statCopy.InvalidShares += stat.InvalidShareCount
+
+		workerStats[stat.WorkerName] = statCopy
+	}
+
+	iter.Release()
+
+	var workers []Worker
+	for _, v := range workerStats {
+		workers = append(workers, v)
+	}
+	return workers
 }
