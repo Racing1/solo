@@ -115,6 +115,7 @@ func (c *Collector) Run() {
 			for workerName, pendingStat := range c.PendingStats {
 				fmt.Println("sharediff", c.ShareDifficulty)
 				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty)
+				fmt.Println("rig", workerName, "effective", effectiveHashrate/statCollectionPeriodSecs, "total", totalCollectedHashrate)
 				totalCollectedHashrate += effectiveHashrate / statCollectionPeriodSecs
 				stat := db.Stat{
 					WorkerName:        workerName,
