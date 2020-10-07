@@ -37,6 +37,7 @@ import (
 
 // Stat represents an interface for a stat DB object
 type Stat struct {
+	Timestamp int64 `json:"timestamp"`
 	WorkerName        string  `json:"worker_name"`
 	ValidShareCount   uint64  `json:"valid_share_count"`
 	StaleShareCount   uint64  `json:"stale_share_count"`

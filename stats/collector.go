@@ -114,6 +114,7 @@ func (c *Collector) Run() {
 				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty) / statCollectionPeriodSecs
 				totalCollectedHashrate += effectiveHashrate
 				stat := db.Stat{
+					Timestamp:         timestamp,
 					WorkerName:        workerName,
 					ValidShareCount:   pendingStat.ValidShares,
 					StaleShareCount:   pendingStat.StaleShares,
