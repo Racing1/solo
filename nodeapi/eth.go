@@ -18,6 +18,7 @@ package nodeapi
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/flexpool/solo/utils"
@@ -47,6 +48,42 @@ func (n *Node) BlockNumber() (uint64, error) {
 	}
 
 	return blockNumber, nil
+}
+
+// ChainID delegates to `eth_chainId` API method, and returns the network's chain id
+func (n *Node) ChainID() (uint64, error) {
+	data, err := n.makeHTTPRPCRequest("eth_chainId", nil)
+	if err != nil {
+		return 0, err
+	}
+
+	chainID, err := strconv.ParseUint(utils.Clear0x(data.(string)), 16, 64)
+	if err != nil {
+		return 0, err
+	}
+	return chainID, nil
+}
+
+// Balance delegates to `eth_getBalance` API method, and returns the address's balance
+func (n *Node) Balance(address string) (*big.Int, error) {
+	data, err := n.makeHTTPRPCRequest("eth_getBalance", []interface{}{address})
+	if err != nil {
+		return nil, err
+	}
+
+	balance, _ := big.NewInt(0).SetString(utils.Clear0x(data.(string)), 16)
+
+	return balance, nil
+}
+
+// Coinbase delegates to `eth_coinbase` API method, and returns the miner's coinbase address
+func (n *Node) Coinbase() (string, error) {
+	data, err := n.makeHTTPRPCRequest("eth_coinbase", nil)
+	if err != nil {
+		return "", err
+	}
+
+	return data.(string), nil
 }
 
 // ClientVersion delegates to `eth_blockNumber` API method, and returns the current block number
