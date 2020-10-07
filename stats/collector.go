@@ -18,6 +18,7 @@ package stats
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -110,7 +111,7 @@ func (c *Collector) Run() {
 			batch := new(leveldb.Batch)
 			pendingTotalStat := db.TotalStat{}
 			timestamp := time.Now().Unix() / statCollectionPeriodSecs * statCollectionPeriodSecs // Get rid of remainder
-
+			fmt.Println("pending stats", c.PendingStats)
 			for workerName, pendingStat := range c.PendingStats {
 				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty)
 				totalCollectedHashrate += effectiveHashrate / statCollectionPeriodSecs
