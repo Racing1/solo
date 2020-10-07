@@ -27,65 +27,66 @@ import (
 	"github.com/flexpool/solo/log"
 	"github.com/flexpool/solo/utils"
 
+	"encoding/json"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 // Stat represents an interface for a stat DB object
 type Stat struct {
-	WorkerName        string  `msgpack:"worker_name"`
-	ValidShareCount   uint64  `msgpack:"valid_share_count"`
-	StaleShareCount   uint64  `msgpack:"stale_share_count"`
-	InvalidShareCount uint64  `msgpack:"invalid_share_count"`
-	ReportedHashrate  float64 `msgpack:"reported_hashrate"`
-	EffectiveHashrate float64 `msgpack:"effective_hashrate"`
-	IPAddress         string  `msgpack:"ip_address"`
+	WorkerName        string  `json:"worker_name"`
+	ValidShareCount   uint64  `json:"valid_share_count"`
+	StaleShareCount   uint64  `json:"stale_share_count"`
+	InvalidShareCount uint64  `json:"invalid_share_count"`
+	ReportedHashrate  float64 `json:"reported_hashrate"`
+	EffectiveHashrate float64 `json:"effective_hashrate"`
+	IPAddress         string  `json:"ip_address"`
 }
 
 // TotalStat represents an interface for a summarized stat DB object
 type TotalStat struct {
-	ValidShareCount   uint64  `msgpack:"valid_share_count" json:"validShares"`
-	StaleShareCount   uint64  `msgpack:"stale_share_count"`
-	InvalidShareCount uint64  `msgpack:"invalid_share_count"`
-	ReportedHashrate  float64 `msgpack:"reported_hashrate"`
-	EffectiveHashrate float64 `msgpack:"effective_hashrate"`
-	WorkerCount       uint64  `msgpack:"worker_count"`
+	ValidShareCount   uint64  `json:"valid_share_count" json:"validShares"`
+	StaleShareCount   uint64  `json:"stale_share_count"`
+	InvalidShareCount uint64  `json:"invalid_share_count"`
+	ReportedHashrate  float64 `json:"reported_hashrate"`
+	EffectiveHashrate float64 `json:"effective_hashrate"`
+	WorkerCount       uint64  `json:"worker_count"`
 }
 
 // BestShare represents an interface for a best share DB object
 type BestShare struct {
-	WorkerName            string  `msgpack:"worker_name"`
-	ActualShareDifficulty float64 `msgpack:"actual_share_difficulty"`
-	Timestamp             int64   `msgpack:"timestamp"`
+	WorkerName            string  `json:"worker_name"`
+	ActualShareDifficulty float64 `json:"actual_share_difficulty"`
+	Timestamp             int64   `json:"timestamp"`
 }
 
 // Block represents an interface for a block DB object
 type Block struct {
-	Hash        string  `msgpack:"hash"`
-	Number      uint64  `msgpack:"number"`
-	Type        string  `msgpack:"type"`
-	WorkerName  string  `msgpack:"worker_name"`
-	Difficulty  float64 `msgpack:"difficulty"`
-	Timestamp   int64   `msgpack:"timestamp"`
-	Confirmed   bool    `msgpack:"confirmed"`
-	MinedHashes float64 `msgpack:"mined_hashes"`
-	RoundTime   int64   `msgpack:"round_time"`
-	Luck        float64 `msgpack:"luck"`
+	Hash        string  `json:"hash"`
+	Number      uint64  `json:"number"`
+	Type        string  `json:"type"`
+	WorkerName  string  `json:"worker_name"`
+	Difficulty  float64 `json:"difficulty"`
+	Timestamp   int64   `json:"timestamp"`
+	Confirmed   bool    `json:"confirmed"`
+	MinedHashes float64 `json:"mined_hashes"`
+	RoundTime   int64   `json:"round_time"`
+	Luck        float64 `json:"luck"`
 }
 
 // WriteStatToBatch writes worker stat object to the LevelDB batch
 func WriteStatToBatch(batch *leveldb.Batch, stat Stat, timestamp int64) {
-	data, _ := msgpack.Marshal(stat)
+	data, _ := json.Marshal(stat)
 	key := StatPrefix + strconv.FormatInt(timestamp, 10) + "_" + stat.WorkerName
 	batch.Put([]byte(key), data)
 }
 
 // WriteTotalStatToBatch writes worker stat object to the LevelDB batch
 func WriteTotalStatToBatch(batch *leveldb.Batch, stat TotalStat, timestamp int64) {
-	data, _ := msgpack.Marshal(stat)
+	data, _ := json.Marshal(stat)
 	key := TotalStatPrefix + strconv.FormatInt(timestamp, 10)
 	batch.Put([]byte(key), data)
 }
@@ -117,14 +118,14 @@ func (db *Database) PruneStats(deleteDataOlderThanSecs int64) {
 
 // WriteMinedBlock writes mined block to the database
 func (db *Database) WriteMinedBlock(block Block) error {
-	data, _ := msgpack.Marshal(block)
+	data, _ := json.Marshal(block)
 	key := MinedBlockPrefix + block.Hash
 	return db.DB.Put([]byte(key), data, nil)
 }
 
 // WriteBestShare writes best share  to the database
 func (db *Database) WriteBestShare(bestShare BestShare, timestamp int64) error {
-	data, _ := msgpack.Marshal(bestShare)
+	data, _ := json.Marshal(bestShare)
 	key := BestSharePrefix + bestShare.WorkerName + "_" + strconv.FormatInt(timestamp, 10) + "_" + strconv.FormatUint(rand.Uint64(), 16)
 	return db.DB.Put([]byte(key), data, nil)
 }
@@ -160,7 +161,7 @@ func (db *Database) GetTotalStatsByTimestamp(timestamp int64) (TotalStat, error)
 		return TotalStat{}, err
 	}
 	var parsedData TotalStat
-	err = msgpack.Unmarshal(data, &parsedData)
+	err = json.Unmarshal(data, &parsedData)
 	return parsedData, err
 }
 
@@ -204,7 +205,7 @@ func (db *Database) GetBlocksUnsorted() []Block {
 
 		var parsedBlock Block
 
-		if err := msgpack.Unmarshal(iter.Value(), &parsedBlock); err != nil {
+		if err := json.Unmarshal(iter.Value(), &parsedBlock); err != nil {
 			panic(errors.Wrap(err, "Database is corrupted"))
 		}
 
@@ -245,7 +246,7 @@ func (db *Database) GetUnsortedBestShares() []BestShare {
 
 		var parsedBestShare BestShare
 
-		if err := msgpack.Unmarshal(iter.Value(), &parsedBestShare); err != nil {
+		if err := json.Unmarshal(iter.Value(), &parsedBestShare); err != nil {
 			panic(errors.Wrap(err, "Database is corrupted"))
 		}
 

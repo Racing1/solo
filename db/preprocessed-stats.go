@@ -17,17 +17,18 @@
 package db
 
 import (
+	"encoding/json"
+	"fmt"
 	"math/big"
 
 	"github.com/pkg/errors"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 // TotalShares represents an interface to total shares db object
 type TotalShares struct {
-	ValidShares   uint64 `msgpack:"valid_shares"`
-	StaleShares   uint64 `msgpack:"stale_shares"`
-	InvalidShares uint64 `msgpack:"invalidShares"`
+	ValidShares   uint64 `json:"valid_shares"`
+	StaleShares   uint64 `json:"stale_shares"`
+	InvalidShares uint64 `json:"invalidShares"`
 }
 
 // GetAndWriteCachedValues gets (calculates) and writes cached values to the db
@@ -56,6 +57,7 @@ func (db *Database) GetAndWriteCachedValues() error {
 	avgHashrate := big.NewFloat(0)
 
 	for _, item := range effectiveNoZeroes {
+		fmt.Println("effective", item, effectiveNoZeroesLen, item/effectiveNoZeroesLen)
 		avgHashrate.Set(big.NewFloat(0).Add(avgHashrate, big.NewFloat(item/effectiveNoZeroesLen))) // 144 is the length of history
 	}
 
@@ -65,7 +67,7 @@ func (db *Database) GetAndWriteCachedValues() error {
 	if err != nil {
 		return err
 	}
-	data, _ := msgpack.Marshal(TotalShares{
+	data, _ := json.Marshal(TotalShares{
 		ValidShares:   totalValidShares,
 		StaleShares:   totalStaleShares,
 		InvalidShares: totalInvalidShares,
@@ -87,7 +89,7 @@ func (db *Database) GetTotalShares() (TotalShares, error) {
 		return TotalShares{}, err
 	}
 	var totalShares TotalShares
-	err = msgpack.Unmarshal(data, &totalShares)
+	err = json.Unmarshal(data, &totalShares)
 	if err != nil {
 		panic(errors.Wrap(err, "Database is corrupted"))
 	}
