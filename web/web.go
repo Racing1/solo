@@ -87,12 +87,12 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 	mux.HandleFunc("/api/v1/history", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		type historyStruct struct {
-			Timestamp int64   `json:"timestamp"`
-			Effective float64 `json:"effectiveHashrate"`
-			Reported  float64 `json:"reportedHashrate"`
-			Valid     float64 `json:"validShares"`
-			Stale     float64 `json:"staleShares"`
-			Invalid   float64 `json:"invalidShares"`
+			Timestamp int64  `json:"timestamp"`
+			Effective uint64 `json:"effectiveHashrate"`
+			Reported  uint64 `json:"reportedHashrate"`
+			Valid     uint64 `json:"validShares"`
+			Stale     uint64 `json:"staleShares"`
+			Invalid   uint64 `json:"invalidShares"`
 		}
 
 		var historyFmt []historyStruct
