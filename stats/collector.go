@@ -18,7 +18,6 @@ package stats
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -111,12 +110,9 @@ func (c *Collector) Run() {
 			batch := new(leveldb.Batch)
 			pendingTotalStat := db.TotalStat{}
 			timestamp := time.Now().Unix() / statCollectionPeriodSecs * statCollectionPeriodSecs // Get rid of remainder
-			fmt.Println("pending stats", c.PendingStats)
 			for workerName, pendingStat := range c.PendingStats {
-				fmt.Println("sharediff", c.ShareDifficulty)
-				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty)
-				fmt.Println("rig", workerName, "effective", effectiveHashrate/statCollectionPeriodSecs, "total", totalCollectedHashrate)
-				totalCollectedHashrate += effectiveHashrate / statCollectionPeriodSecs
+				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty) / statCollectionPeriodSecs
+				totalCollectedHashrate += effectiveHashrate
 				stat := db.Stat{
 					WorkerName:        workerName,
 					ValidShareCount:   pendingStat.ValidShares,
@@ -134,14 +130,11 @@ func (c *Collector) Run() {
 				pendingTotalStat.ReportedHashrate += pendingStat.ReportedHashrate
 				pendingTotalStat.WorkerCount++
 
-				fmt.Println("round pendingTotalStat.EffectiveHashrate", pendingTotalStat.EffectiveHashrate)
-
 				db.WriteStatToBatch(batch, stat, timestamp)
 			}
 
 			c.Mux.Unlock()
 			c.Clear()
-			fmt.Println("pending total stat")
 			db.WriteTotalStatToBatch(batch, pendingTotalStat, timestamp)
 
 			c.Database.DB.Write(batch, nil)
