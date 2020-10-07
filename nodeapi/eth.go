@@ -72,6 +72,8 @@ func (n *Node) Balance(address string) (*big.Int, error) {
 		return nil, err
 	}
 
+	fmt.Println("response", data.(string), utils.Clear0x(data.(string)))
+
 	balance, _ := big.NewInt(0).SetString(utils.Clear0x(data.(string)), 16)
 
 	return balance, nil
