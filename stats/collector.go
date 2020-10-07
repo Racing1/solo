@@ -113,6 +113,7 @@ func (c *Collector) Run() {
 			timestamp := time.Now().Unix() / statCollectionPeriodSecs * statCollectionPeriodSecs // Get rid of remainder
 			fmt.Println("pending stats", c.PendingStats)
 			for workerName, pendingStat := range c.PendingStats {
+				fmt.Println("sharediff", c.ShareDifficulty)
 				effectiveHashrate := float64(pendingStat.ValidShares) * float64(c.ShareDifficulty)
 				totalCollectedHashrate += effectiveHashrate / statCollectionPeriodSecs
 				stat := db.Stat{
