@@ -73,7 +73,6 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 	}
 
 	mux.HandleFunc("/api/v1/currentBlock", func(w http.ResponseWriter, r *http.Request) {
-
 		// DEBUG ONLY !!!
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
