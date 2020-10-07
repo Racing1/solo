@@ -157,6 +157,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 	mux.HandleFunc("/api/v1/headerStats", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		workers := server.database.GetWorkers()
+		totalShares, err := server.database.GetTotalShares()
 
 		workersOnline := 0
 		workersOffline := 0
@@ -173,8 +174,9 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 				"workersOnline":   workersOnline,
 				"workersOffline":  workersOffline,
 				"coinbaseBalance": 0,
-				"efficiency":      0,
+				"efficiency":      totalShares.ValidShares / (totalShares.ValidShares + totalShares.StaleShares + totalShares.InvalidShares),
 			},
+			Error: err,
 		}))
 	})
 
