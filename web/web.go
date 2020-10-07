@@ -169,12 +169,17 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 			}
 		}
 
+		chainID, _ := server.node.ChainID()
+		coinbase, _ := server.node.Coinbase()
+		coinbaseBalance, _ := server.node.Balance(coinbase)
+
 		w.Write(MarshalAPIResponse(APIResponse{
 			Result: h{
 				"workersOnline":   workersOnline,
 				"workersOffline":  workersOffline,
-				"coinbaseBalance": 0,
+				"coinbaseBalance": coinbaseBalance,
 				"efficiency":      float64(totalShares.ValidShares) / float64(totalShares.ValidShares+totalShares.StaleShares+totalShares.InvalidShares),
+				"chainId":         chainID,
 			},
 			Error: err,
 		}))
