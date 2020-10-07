@@ -69,6 +69,7 @@ func (n *Node) Balance(address string) (*big.Int, error) {
 	fmt.Println("getting balance of", address)
 	data, err := n.makeHTTPRPCRequest("eth_getBalance", []interface{}{address})
 	if err != nil {
+		fmt.Println("error", err)
 		return nil, err
 	}
 
