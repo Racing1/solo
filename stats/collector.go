@@ -134,12 +134,14 @@ func (c *Collector) Run() {
 				pendingTotalStat.ReportedHashrate += pendingStat.ReportedHashrate
 				pendingTotalStat.WorkerCount++
 
+				fmt.Println("round pendingTotalStat.EffectiveHashrate", pendingTotalStat.EffectiveHashrate)
+
 				db.WriteStatToBatch(batch, stat, timestamp)
 			}
 
 			c.Mux.Unlock()
 			c.Clear()
-
+			fmt.Println("pending total stat")
 			db.WriteTotalStatToBatch(batch, pendingTotalStat, timestamp)
 
 			c.Database.DB.Write(batch, nil)
