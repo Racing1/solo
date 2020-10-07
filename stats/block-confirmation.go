@@ -18,6 +18,7 @@ package stats
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"sync"
 	"time"
@@ -28,7 +29,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 // BlockConfirmationManager is a daemon that confirms blocks by verifying its type (block/uncle/orphan)
@@ -77,7 +77,7 @@ func (b *BlockConfirmationManager) Run() {
 			iter := b.Database.DB.NewIterator(util.BytesPrefix([]byte(db.MinedBlockPrefix)), nil)
 			for iter.Next() {
 				var parsedBlock db.Block
-				err := msgpack.Unmarshal(iter.Value(), &parsedBlock)
+				err := json.Unmarshal(iter.Value(), &parsedBlock)
 				if err != nil || (parsedBlock.Type != "block" && parsedBlock.Type != "uncle" && parsedBlock.Type != "orphan") {
 					panic(errors.Wrap(err, "Database is corrupted"))
 				}
@@ -106,7 +106,7 @@ func (b *BlockConfirmationManager) Run() {
 					}
 
 					parsedBlock.Confirmed = true
-					blockBytes, _ := msgpack.Marshal(parsedBlock)
+					blockBytes, _ := json.Marshal(parsedBlock)
 					if b.Database.DB.Put(iter.Key(), blockBytes, nil) != nil {
 						log.Logger.WithFields(logrus.Fields{
 							"prefix": "blockmanager",
