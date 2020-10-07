@@ -174,7 +174,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 				"workersOnline":   workersOnline,
 				"workersOffline":  workersOffline,
 				"coinbaseBalance": 0,
-				"efficiency":      totalShares.ValidShares / (totalShares.ValidShares + totalShares.StaleShares + totalShares.InvalidShares),
+				"efficiency":      float64(totalShares.ValidShares) / float64(totalShares.ValidShares+totalShares.StaleShares+totalShares.InvalidShares),
 			},
 			Error: err,
 		}))
