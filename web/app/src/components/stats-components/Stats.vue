@@ -5,7 +5,7 @@
     <WorkerHeader ref="workerHeader" v-on:workerDeselected="updateWorker('')" />
     <MainStats :selectedWorker="selectedWorker" />
     <Charts :selectedWorker="selectedWorker" />
-    <WorkerList v-on:workerSelected="updateWorker($event)" />
+    <WorkerList v-on:worker-selected="updateWorker($event)" />
   </div>
 </template>
 

@@ -69,6 +69,11 @@ export default {
         type: "column",
         height: 200,
       },
+      plotOptions: {
+        column: {
+          pointWidth: 1,
+        },
+      },
       title: {
         text: "Shares",
       },
@@ -142,54 +147,56 @@ export default {
           `{point.x:%e. %b %H:%M}: {point.y:.2f} ` + siChar + `H/s`;
       };
       console.log("params", { workerName });
-      $.get("http://localhost:8000/api/v1/history", { workerName }, function (
-        data
-      ) {
-        var avgEffectiveHashrate = [];
+      $.get(
+        window.baseAPIEndpoint + "/api/v1/history",
+        { workerName },
+        function (data) {
+          var avgEffectiveHashrate = [];
 
-        data.result.forEach((item) => {
-          avgEffectiveHashrate.push(item.effectiveHashrate);
-        });
+          data.result.forEach((item) => {
+            avgEffectiveHashrate.push(item.effectiveHashrate);
+          });
 
-        // Calculating average
-        avgEffectiveHashrate =
-          avgEffectiveHashrate.reduce((a, b) => a + b, 0) -
-          avgEffectiveHashrate.length;
+          // Calculating average
+          avgEffectiveHashrate =
+            avgEffectiveHashrate.reduce((a, b) => a + b, 0) -
+            avgEffectiveHashrate.length;
 
-        var si = getSi(avgEffectiveHashrate);
+          var si = getSi(avgEffectiveHashrate);
 
-        var effectiveHashrateHistory = [];
-        var reportedHashrateHistory = [];
-        var validSharesHistory = [];
-        var staleSharesHistory = [];
-        var invalidSharesHistory = [];
+          var effectiveHashrateHistory = [];
+          var reportedHashrateHistory = [];
+          var validSharesHistory = [];
+          var staleSharesHistory = [];
+          var invalidSharesHistory = [];
 
-        data.result.forEach((item) => {
-          effectiveHashrateHistory.push([
-            item.timestamp * 1000,
-            item.effectiveHashrate / si[0],
-          ]);
-          reportedHashrateHistory.push([
-            item.timestamp * 1000,
-            item.reportedHashrate / si[0],
-          ]);
-          validSharesHistory.push([item.timestamp * 1000, item.validShares]);
-          staleSharesHistory.push([item.timestamp * 1000, item.staleShares]);
-          invalidSharesHistory.push([
-            item.timestamp * 1000,
-            item.invalidShares,
-          ]);
-        });
+          data.result.forEach((item) => {
+            effectiveHashrateHistory.push([
+              item.timestamp * 1000,
+              item.effectiveHashrate / si[0],
+            ]);
+            reportedHashrateHistory.push([
+              item.timestamp * 1000,
+              item.reportedHashrate / si[0],
+            ]);
+            validSharesHistory.push([item.timestamp * 1000, item.validShares]);
+            staleSharesHistory.push([item.timestamp * 1000, item.staleShares]);
+            invalidSharesHistory.push([
+              item.timestamp * 1000,
+              item.invalidShares,
+            ]);
+          });
 
-        updateData(
-          effectiveHashrateHistory,
-          reportedHashrateHistory,
-          validSharesHistory,
-          staleSharesHistory,
-          invalidSharesHistory,
-          si[1]
-        );
-      }).fail(function (data) {
+          updateData(
+            effectiveHashrateHistory,
+            reportedHashrateHistory,
+            validSharesHistory,
+            staleSharesHistory,
+            invalidSharesHistory,
+            si[1]
+          );
+        }
+      ).fail(function (data) {
         alert("Unable to fetch history: " + data.responseJSON.error);
       });
     },

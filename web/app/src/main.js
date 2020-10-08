@@ -1,3 +1,6 @@
+// Preconfigured constants
+import './preconf.js';
+
 // Preload CSS
 import 'hamburgers/dist/hamburgers.min.css';
 

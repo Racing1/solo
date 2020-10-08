@@ -15,14 +15,17 @@
             <span class="balance">{{ balance }}</span>
             <div class="lower">{{ ticker }}</div>
           </div>
-          <div class="gray subbalance">{{ Math.round(price * balance * 100) / 100 }} USD</div>
+          <div class="gray subbalance">
+            {{ Math.round(price * balance * 100) / 100 }} USD
+          </div>
         </div>
       </div>
     </div>
     <div class="stat">
       <div class="sec">Efficiency</div>
       <div class="main">
-        <mark id="valid_shares_percentage_big">{{ efficiency }}</mark>%
+        <mark id="valid_shares_percentage_big">{{ efficiency }}</mark
+        >%
       </div>
     </div>
   </div>
@@ -55,7 +58,7 @@ export default {
 
       this.workersOnline = data.workersOnline;
       this.workersOffline = data.workersOffline;
-      this.efficiency = Math.round(data.efficiency * 10) / 10;
+      this.efficiency = Math.round(data.efficiency * 100 * 10) / 10;
 
       var currencyDetails = getCurrencyDetails(data.chainId);
       this.ticker = currencyDetails.ticker;
@@ -78,7 +81,7 @@ export default {
       );
     };
 
-    $.get("http://localhost:8000/api/v1/headerStats", {}, function (data) {
+    $.get(window.baseAPIEndpoint + "/api/v1/headerStats", {}, function (data) {
       updateData(data.result);
     }).fail(function (data) {
       alert("Unable to fetch header stats: " + data.responseJSON.error);

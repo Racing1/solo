@@ -4,7 +4,12 @@
       <h1>Workers</h1>
       <div class="workers-search">
         <img src="@/assets/search-black.svg" alt="Search Icon" />
-        <input type="text" id="worker-search" placeholder="Search by name" v-model="searchQuery" />
+        <input
+          type="text"
+          id="worker-search"
+          placeholder="Search by name"
+          v-model="searchQuery"
+        />
       </div>
     </div>
     <div class="table-wrapper mt20" id="workers-table">
@@ -15,11 +20,17 @@
               Name
               <WorkerListSortIcon :sortValue="sortKeys.workerName" />
             </th>
-            <th class="black-underline noselect" @click="sort('reportedHashrate')">
+            <th
+              class="black-underline noselect"
+              @click="sort('reportedHashrate')"
+            >
               Reported
               <WorkerListSortIcon :sortValue="sortKeys.reportedHashrate" />
             </th>
-            <th class="black-underline noselect" @click="sort('effectiveHashrate')">
+            <th
+              class="black-underline noselect"
+              @click="sort('effectiveHashrate')"
+            >
               Effective
               <WorkerListSortIcon :sortValue="sortKeys.effectiveHashrate" />
             </th>
@@ -55,7 +66,7 @@
               :invalidShares="worker.invalidShares"
               :lastSeen="worker.lastSeen"
               v-if="worker.workerName.includes(searchQuery)"
-              v-on:workerSelected="updateWorker($event)"
+              v-on:worker-selected="updateWorker($event)"
             />
           </template>
         </tbody>
@@ -96,7 +107,7 @@ export default {
     };
   },
   created() {
-    $.get("http://localhost:8000/api/v1/workers", {}, (data) => {
+    $.get(window.baseAPIEndpoint + "/api/v1/workers", {}, (data) => {
       data = data.result;
       var workers = [];
       for (const workerName in data) {
@@ -121,6 +132,13 @@ export default {
           lastSeen: data[workerName].lastSeen,
         });
       }
+      workers.sort(function (a, b) {
+        // Compare the 2 dates
+        if (a.workerName < b.workerName) return -1;
+        if (a.workerName > b.workerName) return 1;
+        return 0;
+      });
+      console.log("dbg", { workers });
       this.workers = workers;
     }).fail(function (data) {
       alert("Unable to fetch stats: " + data.responseJSON.error);
@@ -155,7 +173,7 @@ export default {
       });
     },
     updateWorker: function (workerName) {
-      this.$emit("workerSelected", workerName);
+      this.$emit("worker-selected", workerName);
     },
   },
   beforeMount() {

@@ -4,7 +4,7 @@
       <div class="header noselect">
         <a class="logo" href="/">
           <img src="../assets/logo.svg" alt="Logo" />
-          flexpool SOLO
+          Flexpool SOLO
         </a>
         <button class="hamburger hamburger--spin" type="button">
           <span class="hamburger-box">
@@ -35,7 +35,7 @@ import $ from "jquery";
 export default {
   name: "Navbar",
   mounted() {
-    $(".hamburger").click(function() {
+    $(".hamburger").click(function () {
       var nav = $("nav");
       var body = $("body");
       var navul = $(".navbody ul");
@@ -53,7 +53,7 @@ export default {
         navul.css("visibility", "hidden");
       }
     });
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>

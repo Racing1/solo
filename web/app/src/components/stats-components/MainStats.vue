@@ -35,7 +35,10 @@
           </div>
           <div class="title">
             <span>Valid (</span>
-            <span id="valid_shares_percentage">{{ Math.round(validShares / totalShares * 1000)/10 }}</span>%)
+            <span id="valid_shares_percentage">{{
+              Math.round((validShares / totalShares) * 1000) / 10
+            }}</span
+            >%)
           </div>
         </div>
         <div class="stat">
@@ -44,7 +47,10 @@
           </div>
           <div class="title">
             <span>Stale (</span>
-            <span id="stale_shares_percentage">{{ Math.round(staleShares / totalShares * 1000)/10 }}</span>%)
+            <span id="stale_shares_percentage">{{
+              Math.round((staleShares / totalShares) * 1000) / 10
+            }}</span
+            >%)
           </div>
         </div>
         <div class="stat">
@@ -53,9 +59,10 @@
           </div>
           <div class="title">
             <span>Invalid (</span>
-            <span
-              id="invalid_shares_percentage"
-            >{{ Math.round(invalidShares / totalShares * 1000)/10 }}</span>%)
+            <span id="invalid_shares_percentage">{{
+              Math.round((invalidShares / totalShares) * 1000) / 10
+            }}</span
+            >%)
           </div>
         </div>
       </div>
@@ -109,7 +116,7 @@ export default {
         this.totalShares =
           this.validShares + this.staleShares + this.invalidShares;
       };
-      $.get("http://localhost:8000/api/v1/stats", { workerName }, function (
+      $.get(window.baseAPIEndpoint + "/api/v1/stats", { workerName }, function (
         data
       ) {
         updateData(data.result);

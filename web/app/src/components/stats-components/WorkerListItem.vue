@@ -5,16 +5,17 @@
       <div class="space-between">
         <span
           class="worker-name black-underline"
-          @click="$emit('workerSelected', workerName)"
-        >{{ workerName }}</span>
+          @click="$emit('worker-selected', workerName)"
+          >{{ workerName }}</span
+        >
         <span class="rig-offline" v-if="lastSeen > 600">Offline</span>
       </div>
     </td>
-    <td :class="{bluegray: lastSeen > 600}">
+    <td :class="{ bluegray: lastSeen > 600 }">
       {{ reportedHashrate }}
       <span class="bluegray">{{ reportedHashrateSIChar }}H/s</span>
     </td>
-    <td :class="{bluegray: lastSeen > 600}">
+    <td :class="{ bluegray: lastSeen > 600 }">
       {{ effectiveHashrate }}
       <span class="bluegray">{{ effectiveHashrateSIChar }}H/s</span>
     </td>
