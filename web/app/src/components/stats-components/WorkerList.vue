@@ -65,7 +65,11 @@
               :staleShares="worker.staleShares"
               :invalidShares="worker.invalidShares"
               :lastSeen="worker.lastSeen"
-              v-if="worker.workerName.includes(searchQuery)"
+              v-if="
+                worker.workerName
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+              "
               v-on:worker-selected="updateWorker($event)"
             />
           </template>
