@@ -14,15 +14,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-FROM golang:1.14-alpine as builder
+FROM golang:1.14-alpine as gobuilder
 
 ADD . /src/app
 
 RUN apk add build-base; \
     cd /src/app && go build
 
+FROM node:alpine as nodebuilder
+
+ADD ./web/app /src/app
+WORKDIR /src/app
+RUN yarn install && yarn build
+
+
 FROM alpine:3
 
-COPY --from=builder /src/app/solo /app/solo
+COPY --from=gobuilder /src/app/solo /app/solo
+COPY --from=nodebuilder /src/app/dist /app/webapp
+WORKDIR /app
 
 ENTRYPOINT [ "/app/solo" ]

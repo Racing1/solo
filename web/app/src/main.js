@@ -1,5 +1,5 @@
 // Preconfigured constants
-import './preconf.js';
+window.baseAPIEndpoint = "";
 
 // Preload CSS
 import 'hamburgers/dist/hamburgers.min.css';

@@ -14,16 +14,16 @@
       </div>
       <ul class="navul">
         <li>
-          <a href="stats">Stats</a>
+          <a href="#">Stats</a>
         </li>
         <li>
-          <a href="blocks">Blocks</a>
+          <a href="#">Blocks</a>
         </li>
         <li>
-          <a href="miners">Node</a>
+          <a href="#">Node</a>
         </li>
         <li>
-          <a href="docs/help" class="help">Docs</a>
+          <a href="#" class="help">Docs</a>
         </li>
       </ul>
     </div>

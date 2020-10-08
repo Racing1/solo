@@ -34,7 +34,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// h is a Simple shortcut to map[string]interface{}
+// h is a shortcut to map[string]interface{}
 type h map[string]interface{}
 
 // Server is a RESTful API & Front End App server instance
@@ -59,9 +59,6 @@ func MarshalAPIResponse(resp APIResponse) []byte {
 	return data
 }
 
-// H is a shortcut for map[string]interface{}
-type H map[string]interface{}
-
 // NewServer creates new Server instance
 func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGroup, workmanager *gateway.WorkManager, bind string) *Server {
 	mux := http.NewServeMux()
@@ -72,6 +69,9 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 		workmanager:     workmanager,
 		engineWaitGroup: engineWaitGroup,
 	}
+
+	fs := http.FileServer(http.Dir("./webapp"))
+	mux.Handle("/", fs)
 
 	mux.HandleFunc("/api/v1/currentBlock", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -212,6 +212,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 				LastSeen:          time.Now().Unix() - wrkr.LastSeen,
 			}
 		}
+
 		w.Write(MarshalAPIResponse(APIResponse{
 			Result: workersResponse,
 			Error:  nil,
