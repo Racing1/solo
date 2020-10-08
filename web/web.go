@@ -22,6 +22,7 @@ import (
 	"math/big"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/flexpool/solo/db"
 	"github.com/flexpool/solo/gateway"
@@ -208,7 +209,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 				ValidShares:       wrkr.ValidShares,
 				StaleShares:       wrkr.StaleShares,
 				InvalidShares:     wrkr.InvalidShares,
-				LastSeen:          wrkr.LastSeen,
+				LastSeen:          time.Now().Unix() - wrkr.LastSeen,
 			}
 		}
 		w.Write(MarshalAPIResponse(APIResponse{
