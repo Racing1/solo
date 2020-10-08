@@ -185,6 +185,38 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 		}))
 	})
 
+	mux.HandleFunc("/api/v1/workers", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "application/json")
+
+		type worker struct {
+			EffectiveHashrate float64 `json:"effectiveHashrate"`
+			ReportedHashrate  float64 `json:"reportedHashrate"`
+			ValidShares       uint64  `json:"validShares"`
+			StaleShares       uint64  `json:"staleShares"`
+			InvalidShares     uint64  `json:"invalidShares"`
+			LastSeen          int64   `json:"lastSeen"`
+		}
+
+		workers := server.database.GetWorkers()
+
+		var workersResponse map[string]worker
+
+		for _, wrkr := range workers {
+			workersResponse[wrkr.Name] = worker{
+				EffectiveHashrate: wrkr.EffectiveHashrate,
+				ReportedHashrate:  wrkr.ReportedHashrate,
+				ValidShares:       wrkr.ValidShares,
+				StaleShares:       wrkr.StaleShares,
+				InvalidShares:     wrkr.InvalidShares,
+				LastSeen:          wrkr.LastSeen,
+			}
+		}
+		w.Write(MarshalAPIResponse(APIResponse{
+			Result: workersResponse,
+			Error:  nil,
+		}))
+	})
+
 	server.httpServer = &http.Server{
 		Addr:    bind,
 		Handler: mux,
