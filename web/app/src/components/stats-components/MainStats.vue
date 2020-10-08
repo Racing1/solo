@@ -121,7 +121,7 @@ export default {
       ) {
         updateData(data.result);
       }).fail(function (data) {
-        alert("Unable to fetch stats: " + data.responseJSON.error);
+        alert("Unable to fetch stats: " + data.error);
       });
     },
   },

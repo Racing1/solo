@@ -197,7 +197,7 @@ export default {
           );
         }
       ).fail(function (data) {
-        alert("Unable to fetch history: " + data.responseJSON.error);
+        alert("Unable to fetch history: " + data.error);
       });
     },
   },

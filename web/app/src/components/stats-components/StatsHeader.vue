@@ -84,7 +84,7 @@ export default {
     $.get(window.baseAPIEndpoint + "/api/v1/headerStats", {}, function (data) {
       updateData(data.result);
     }).fail(function (data) {
-      alert("Unable to fetch header stats: " + data.responseJSON.error);
+      alert("Unable to fetch header stats: " + data.error);
     });
   },
 };
