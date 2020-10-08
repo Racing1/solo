@@ -296,6 +296,9 @@ func (db *Database) GetWorkers() []Worker {
 
 		if stat.Timestamp > statCopy.LastSeen {
 			statCopy.LastSeen = stat.Timestamp
+		}
+
+		if stat.Timestamp == ts {
 			statCopy.EffectiveHashrate = stat.EffectiveHashrate
 			statCopy.ReportedHashrate = stat.ReportedHashrate
 		}
