@@ -199,7 +199,7 @@ func NewServer(db *db.Database, node *nodeapi.Node, engineWaitGroup *sync.WaitGr
 
 		workers := server.database.GetWorkers()
 
-		var workersResponse map[string]worker
+		var workersResponse = make(map[string]worker)
 
 		for _, wrkr := range workers {
 			workersResponse[wrkr.Name] = worker{
