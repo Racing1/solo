@@ -146,7 +146,7 @@ export default {
         this.hashrateChartOptions.tooltip.pointFormat =
           `{point.x:%e. %b %H:%M}: {point.y:.2f} ` + siChar + `H/s`;
       };
-      console.log("params", { workerName });
+
       $.get(
         window.baseAPIEndpoint + "/api/v1/history",
         { workerName },
@@ -159,10 +159,8 @@ export default {
 
           // Calculating average
           avgEffectiveHashrate =
-            avgEffectiveHashrate.reduce((a, b) => a + b, 0) -
+            avgEffectiveHashrate.reduce((a, b) => a + b, 0) /
             avgEffectiveHashrate.length;
-
-          console.log("averageHashrate", avgEffectiveHashrate);
 
           var si = getSi(avgEffectiveHashrate);
 
