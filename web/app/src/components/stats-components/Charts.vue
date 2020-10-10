@@ -162,6 +162,8 @@ export default {
             avgEffectiveHashrate.reduce((a, b) => a + b, 0) -
             avgEffectiveHashrate.length;
 
+          console.log("averageHashrate", avgEffectiveHashrate);
+
           var si = getSi(avgEffectiveHashrate);
 
           var effectiveHashrateHistory = [];
